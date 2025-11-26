@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 # Stripe config
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
+print("STRIPE KEY:", stripe.api_key)
 
 # In-memory storage
 PAYMENT_STATUS = {}  # session_id -> "pending"/"paid"
