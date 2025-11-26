@@ -1,21 +1,21 @@
+from flask import Flask, request
 import os
-import stripe
 import requests
-from flask import Flask, request, jsonify
+import stripe
 
 app = Flask(__name__)
 
-# Load Stripe secret key from environment variable
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")  # e.g., sk_test_xxx
+# Load secrets from environment variables
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
 
-# Optional: store payment statuses in memory
+# Store payment status in memory (optional)
 PAYMENT_STATUS = {}
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
     payload = request.data
     sig_header = request.headers.get("Stripe-Signature")
-    endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")  # e.g., whsec_xxx
 
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
@@ -28,8 +28,6 @@ def webhook():
         session_id = session["id"]
 
         print("Payment completed:", session_id)
-
-        # Update memory
         PAYMENT_STATUS[session_id] = "paid"
 
         # Forward to Raspberry Pi
@@ -45,10 +43,6 @@ def webhook():
 
     return "OK", 200
 
-@app.route("/")
-def index():
-    return jsonify({"status": "Webhook server is running."})
-
 if __name__ == "__main__":
-    # Use port 5000 for local testing
-    app.run(host="0.0.0.0", port=5000)
+    # Use port 10000 to match your previous attempts
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
