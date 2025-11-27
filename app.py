@@ -28,7 +28,7 @@ def create_payment():
     # Create a Stripe checkout session
     try:
         session = stripe.checkout.Session.create(
-            payment_method_types=["card", "gcash"],
+            payment_method_types=["card"],
             line_items=[{
                 "price_data": {
                     "currency": "php",
